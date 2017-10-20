@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<script src='http://d3js.org/d3.v3.min.js'></script>
+<body>
+<script>
+
+d3.csv("pages2k_proxy_db_1_9_0.csv", type, function(error, capitals) {
+  if (error) throw error;
+
+  vector
+      .datum({type: "FeatureCollection", features: capitals});
+
+  // Compute the projected initial center.
+  var center = projection([-98.5, 39.5]);
+
+  // Apply a zoom transform equivalent to projection.{scale,translate,center}.
+  svg
+      .call(zoom)
+      .call(zoom.transform, d3.zoomIdentity
+          .translate(width / 2, height / 2)
+          .scale(1 << 12)
+          .translate(-center[0], -center[1]));
+});
+
+var width = 960,
+height = 480
+
+var projection = d3.geo.equirectangular()
+    .scale(153)
+    .translate([width / 2, height / 2])
+    .precision(.1);
+
+var path = d3.geo.path()
+    .projection(projection)
+
+svg.selectAll(".pin")
+  .data(places)
+  .enter().append("circle", ".pin")
+  .attr("r", 5)
+  .attr("transform", function(d) {
+    return "translate(" + projection([
+      d.location.longitude,
+      d.location.latitude
+    ]) + ")";
+  });
+
+</script>
+</body>
